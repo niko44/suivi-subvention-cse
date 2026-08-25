@@ -36,3 +36,5 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/suivi-subvention-cse:${{ steps.tag.outputs.value }}
+          build-args: |
+            APP_VERSION=${{ steps.tag.outputs.value }}

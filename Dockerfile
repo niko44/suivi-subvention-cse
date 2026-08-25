@@ -13,5 +13,7 @@ COPY . .
 ENV FLASK_APP=app.py
 EXPOSE 5100
 
+ARG APP_VERSION=dev
+ENV APP_VERSION=${APP_VERSION}
 
 CMD ["flask", "run", "--host=0.0.0.0", "--port=5100"]

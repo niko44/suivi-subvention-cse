@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Suivi des subventions CSE</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💶</text></svg>">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Suivi des subventions</a>
+            {% if current_user.is_authenticated %}
+            <div class="d-flex align-items-center gap-3">
+                <span class="text-white small">Connecté : <strong>{{ current_user.firstname }} {{ current_user.lastname }}</strong> {% if current_user.is_admin %}<span class="badge bg-danger">Admin</span>{% else %}<span class="badge bg-secondary">Salarié</span>{% endif %}</span>
+                {% if current_user.is_admin %}
+                    <a href="/settings" class="btn btn-sm btn-outline-light">⚙️ Paramètrage</a>
+                {% endif %}
+                <a href="/logout" class="btn btn-sm btn-outline-warning">🔓 Déconnexion</a>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

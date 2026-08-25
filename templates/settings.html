@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Paramètrage et Gestion des Utilisateurs</h2>
+<a href="/" class="btn btn-sm btn-secondary mb-3">← Retour à l'accueil</a>
+
+<!-- Formulaire de création de compte -->
+<div class="card p-3 mb-4 shadow-sm">
+    <h4>Créer un nouvel utilisateur / salarié</h4>
+    <form action="/add_user" method="POST" class="row g-2 mt-1">
+        <div class="col-md-3">
+            <input type="text" name="firstname" class="form-control form-control-sm" placeholder="Prénom" required>
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="lastname" class="form-control form-control-sm" placeholder="Nom" required>
+        </div>
+        <div class="col-md-2">
+            <input type="text" name="username" class="form-control form-control-sm" placeholder="Identifiant" required>
+        </div>
+        <div class="col-md-2">
+            <input type="password" name="password" class="form-control form-control-sm" placeholder="Mot de passe provisoire" required>
+        </div>
+        <div class="col-md-2 d-flex align-items-center">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="is_admin" id="is_admin">
+                <label class="form-check-label small" for="is_admin">Admin</label>
+            </div>
+        </div>
+        <div class="col-12 mt-2">
+            <button type="submit" class="btn btn-sm btn-success w-100">Créer l'utilisateur</button>
+        </div>
+    </form>
+</div>
+
+<!-- Liste des comptes existants -->
+<div class="card p-3 mb-4 shadow-sm">
+    <h4>Liste des utilisateurs</h4>
+    <table class="table table-sm align-middle mt-2">
+        <tr><th>Nom & Prénom</th><th>Identifiant</th><th>Profil</th><th>Action</th></tr>
+        {% for u in users %}
+        <tr>
+            <td>{{ u.firstname }} {{ u.lastname }}</td>
+            <td><code>{{ u.username }}</code></td>
+            <td>{% if u.is_admin %}<span class="badge bg-danger">Administrateur</span>{% else %}<span class="badge bg-secondary">Salarié</span>{% endif %}</td>
+            <td>
+                {% if u.id != current_user.id %}
+                    <a href="/toggle_admin/{{ u.id }}" class="btn btn-sm btn-outline-primary py-0">Changer rôle</a>
+                    <a href="/delete_employee/{{ u.id }}" class="btn btn-sm btn-outline-danger py-0" onclick="return confirm('Supprimer cet utilisateur ?');">Supprimer</a>
+                {% else %}
+                    <span class="text-muted small">(Vous-même)</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<!-- Modification des Plafonds & Taux -->
+<div class="card p-3 shadow-sm">
+    <h4 class="mb-3">Paramètre Sport & Culture</h4>
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <label class="form-label fw-bold">Taux de subvention (%)</label>
+            <input type="text" class="form-control" name="sport_taux" value="{{ settings.sport_taux | default('50') }}">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-bold">Subvention salarié (€)</label>
+            <input type="text" class="form-control" name="sport_salarie" value="{{ settings.sport_salarie | default('200') }}">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-bold">Subvention Conjoint (€)</label>
+            <input type="text" class="form-control" name="sport_conjoint" value="{{ settings.sport_conjoint | default('100') }}">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-bold">Subvention par enfant (€)</label>
+            <input type="text" class="form-control" name="sport_enfant" value="{{ settings.sport_enfant | default('100') }}">
+        </div>
+    </div>
+</div>
+<div class="card p-3 shadow-sm">
+    <h4 class="mb-3">Paramètre Location familiale</h4>
+    <div class="table-responsive">
+        <table class="table table-bordered text-center align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th style="width: 22%;">Indicateur</th>
+                    <th>Tranche 1</th>
+                    <th>Tranche 2</th>
+                    <th>Tranche 3</th>
+                    <th>Tranche 4</th>
+                    <th>Tranche 5</th>
+                    <th>Tranche 6 (&gt;)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="fw-bold">1. Pourcentage</td>
+                    <td><span class="badge bg-success fs-6">65%</span></td>
+                    <td><span class="badge bg-primary fs-6">55%</span></td>
+                    <td><span class="badge bg-info fs-6">45%</span></td>
+                    <td><span class="badge bg-warning text-dark fs-6">35%</span></td>
+                    <td><span class="badge bg-secondary fs-6">25%</span></td>
+                    <td><span class="badge bg-dark fs-6">20%</span></td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">2. QF (Seuil RFR unitaire)</td>
+                    <td><input type="text" class="form-control text-center" name="seuil_1" value="{{ settings.seuil_1 }}"></td>
+                    <td><input type="text" class="form-control text-center" name="seuil_2" value="{{ settings.seuil_2 }}"></td>
+                    <td><input type="text" class="form-control text-center" name="seuil_3" value="{{ settings.seuil_3 }}"></td>
+                    <td><input type="text" class="form-control text-center" name="seuil_4" value="{{ settings.seuil_4 }}"></td>
+                    <td><input type="text" class="form-control text-center" name="seuil_5" value="{{ settings.seuil_5 }}"></td>
+                    <td class="text-muted fst-italic">Au-delà de S5</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">3. Base Plafond Location (€)</td>
+                    <td><input type="text" class="form-control text-center" name="plafond_t1" value="{{ settings.plafond_t1 }}"></td>
+                    <td><input type="text" class="form-control text-center" name="plafond_t2" value="{{ settings.plafond_t2 }}"></td>
+                    <td><input type="text" class="form-control text-center" name="plafond_t3" value="{{ settings.plafond_t3 }}"></td>
+                    <td><input type="text" class="form-control text-center" name="plafond_t4" value="{{ settings.plafond_t4 }}"></td>
+                    <td><input type="text" class="form-control text-center" name="plafond_t5" value="{{ settings.plafond_t5 }}"></td>
+                    <td><input type="text" class="form-control text-center" name="plafond_t6" value="{{ settings.plafond_t6 }}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <label class="form-label fw-bold">Majoration globale par enfant (€)</label>
+            <input type="text" class="form-control" name="majoration_enfant" value="{{ settings.majoration_enfant }}">
+        </div>
+    </div>
+</div>
+{% endblock %}

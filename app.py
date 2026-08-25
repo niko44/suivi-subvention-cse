@@ -6,6 +6,11 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
+APP_VERSION = os.environ.get('APP_VERSION', 'dev')
+@app.context_processor
+def inject_version():
+    return {'app_version': APP_VERSION}
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////app/bdd/ce_database.db'
